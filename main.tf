@@ -44,6 +44,6 @@ resource "google_compute_instance" "default" {
     reason = "Moringa class"
   }
 
-  metadata_startup_script = "echo hi > /test.txt"
+   metadata_startup_script = "adduser joy && echo 'joy:joy123' | chpasswd && echo 'root:joy123' | chpasswd && sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config && systemctl restart sshd"
 
 }
