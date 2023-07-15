@@ -8,14 +8,42 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("<NAME>.json")
+  credentials = file("master-channel-387506-953eb475daf5.json")
 
-  project = "<PROJECT_ID>"
+  project = "master-channel-387506"
   region  = "us-central1"
   zone    = "us-central1-c"
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
-}
 
+resource "google_compute_instance" "default" {
+  name         = "terraform-provisioner"
+  machine_type = "e2-medium"
+  zone         = "us-central1-a"
+
+  tags = ["reason"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      labels = {
+        my_label = "value"
+      }
+    }
+  }
+
+  network_interface {
+    network = "default"
+
+    access_config {
+      // Ephemeral public IP
+    }
+  }
+
+  metadata = {
+    reason = "Moringa class"
+  }
+
+  metadata_startup_script = "echo hi > /test.txt"
+
+}
