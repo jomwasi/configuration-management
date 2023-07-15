@@ -1,4 +1,3 @@
 [gcp_clients]
 35.239.235.222 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_pass=joy123 ansible_ssh_user=root
 35.224.128.189 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_pass=joy123 ansible_ssh_user=root
-35.239.95.208 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_ssh_pass=joy123 ansible_ssh_user=root
