@@ -1,0 +1,4 @@
+---
+app_dir: /opt/app_dir
+client_dockerfile: /etc/ansible/configuration-management-ip/Dockerfileclient
+backend_dockerfile: /etc/ansible/configuration-management-ip/Dockerfilebackend

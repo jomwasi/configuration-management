@@ -1,0 +1,85 @@
+---
+- name: Ensure git is installed
+  package: name=git state=present
+- name: Ensure npm is installed
+  package: name=npm state=present
+- name: Create a working directory for my code
+  file: "path={{ app_dir }} state=directory"
+- name: Clone project repo
+  git: "name=https://github.com/jomwasi/yolo.git dest={{ app_dir }}"
+
+
+- name: Install the gpg key for nodejs LTS
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+    
+- name: Install the nodejs LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_18.x {{ ansible_lsb.codename }} main"
+    state: present
+    update_cache: yes
+
+- name: Install the nodejs
+  apt:
+    name: nodejs
+    state: present
+
+- name: Install required system packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
+- name: Add Docker GPG
+  apt_key: 
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+- name: Update apt and install docker-ce
+  apt: "name=docker-ce state=latest update_cache=true"
+- name: Install Docker Module for Python 
+  pip: "name=docker"
+    #- name: Add client docker file
+    #copy: src='{{ client_dockerfile }}' dest='{{ app_dir }}/client/Dockerfile'
+    #- name: Add backend docker file
+    # copy: src='{{ backend_dockerfile }}' dest='{{ app_dir }}/backend/Dockerfile'
+- name: Build backend image
+  docker_image:
+    name: backend
+    source: build
+    build:
+      path: '{{ app_dir }}/backend'
+    state: present
+- name: Build client image
+  docker_image:
+    name: client
+    source: build
+    build:
+      path: '{{ app_dir }}/client'
+    state: present
+- name: start Client image
+  docker_container:
+    image: client:latest
+    name: client
+    state: started
+    ports:
+     # Publish container port 9000 as host port 8080
+     - "3000:3000"
+- name: start backend image
+  docker_container:
+    image: backend:latest
+    name: backend
+    state: started
+    ports:
+     # Publish container port 9000 as host port 8080
+     - "5000:5000"
